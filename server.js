@@ -29,19 +29,29 @@ app.post("/app/new/", (req, res) => {
     const info = stmt.run(req.body.user, md5(req.body.pass))
     res.status(201).json({"message": info.changes + " record created: ID "  + info.lastInsertRowid + " (201)"});
     })
+
+
+
+
 // READ a list of all users (HTTP method GET) at endpoint /app/users/
 app.get("/app/users", (req, res) => {	
 	const stmt = db.prepare("SELECT * FROM userinfo").all();
 	res.status(200).json(stmt);
 });
 
+
+
+
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
 app.get("/app/user/:id", (req, res) => {
     const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ?");
     const info = stmt.get(req.params.id)
 
-    res.status(200).json({"id":req.params.id,"user": info.user,"pass":info.pass});
+    res.status(200).json({"id":parseInt(req.params.id),"user": info.user,"pass":info.pass});
 });
+
+
+
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
 app.patch("/app/update/user/:id", (req, res) => {
     const stmt = db.prepare("UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?")
@@ -49,6 +59,9 @@ app.patch("/app/update/user/:id", (req, res) => {
 
     res.status(200).json({"message": info.changes + " record updated: ID "  + req.params.id + " (200)" })
 })
+
+
+
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
 app.delete("/app/delete/user/:id", (req, res) => {
     const stmt = db.prepare("DELETE FROM userinfo WHERE id = ?");
@@ -56,6 +69,9 @@ app.delete("/app/delete/user/:id", (req, res) => {
 
     res.status(200).json({"message": info.changes + " record deleted: ID "  + req.params.id + " (200)" });
 });
+
+
+
 // Default response for any other request
 app.use(function(req, res){
 	res.json({"message":"Endpoint not found. (404)"});
